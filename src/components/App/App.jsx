@@ -1,10 +1,9 @@
-// import { useState } from 'react';
-// import useLocalStorage from '../../hooks/useLocalStorage';
 import { ContactForm } from '../Form/Form';
 import { ContactList } from '../List/List';
 import { Filter } from '../Filter/Filter';
 import css from './App.module.css';
 import { React, Component } from 'react';
+// import { nanoid } from 'nanoid';
 
 class App extends Component {
   state = {
@@ -16,6 +15,25 @@ class App extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedСontacts = JSON.parse(contacts);
+
+    if (parsedСontacts) {
+      this.setState({ contacts: parsedСontacts });
+    }
+  }
+
+  componentDidUpdate(prevState) {
+    const nextContacts = this.state.contacts;
+    const prevContacts = prevState.contacts;
+
+    if (nextContacts !== prevContacts) {
+      localStorage.setItem('contacts', JSON.stringify(nextContacts));
+    }
+  }
+
   formSubmitHandler = formData => {
     this.addToContacts(formData);
   };
@@ -30,8 +48,12 @@ class App extends Component {
     if (isExist) {
       return alert(`${contact.name} is already in contacts`);
     }
+
     const contactsList = contacts.concat(contact);
     return this.setState({ contacts: contactsList });
+    // this.setState(({ contacts }) => ({
+    //   contacts: [{ name, number, id: nanoid() }, ...contacts],
+    // }));
   };
 
   changeFilter = e => {
